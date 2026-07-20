@@ -1,335 +1,662 @@
 {
   "info": {
-    "name": "Dentix API - Roles y Permisos",
-    "description": "Colección de endpoints para el sistema de roles y permisos con Spatie Laravel Permission.\n\n## Setup\n1. Ejecuta `php artisan migrate:fresh --seed`\n2. Inicia el servidor: `php artisan serve`\n3. Usa `{{base_url}}` como variable de entorno (ej: `http://localhost:8000`)\n4. Primero ejecuta **Login** para obtener el token automáticamente",
+    "name": "Dentix API",
+    "description": "Complete API collection for the Dentix dental SaaS platform.\n\n## Setup\n1. Run `php artisan migrate:fresh --seed`\n2. Start the server: `php artisan serve`\n3. Set `base_url` variable (default: `http://localhost:8000`)\n4. First run **Login (Staff)** to auto-save the token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:8000",
-      "type": "string"
-    },
-    {
-      "key": "token",
-      "value": "",
-      "type": "string"
-    }
+    { "key": "base_url", "value": "http://localhost:8000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
   ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{token}}",
-        "type": "string"
-      }
-    ]
-  },
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
   "item": [
     {
       "name": "Auth",
       "item": [
         {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var json = pm.response.json();",
-                  "    pm.collectionVariables.set('token', json.token);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
+          "name": "Login (Staff)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": ["if (pm.response.code === 200) { var json = pm.response.json(); pm.collectionVariables.set('token', json.token); }"],
+              "type": "text/javascript"
             }
-          ],
+          }],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@dentix.com\",\n  \"password\": \"password\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/login",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "login"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dentix.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"patient@dentix.com\",\n  \"password\": \"1234\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login/patient", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "patient"] }
+          }
+        },
+        {
+          "name": "Login (Staff route)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dentix.com\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login/staff", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "staff"] }
+          }
+        },
+        {
+          "name": "My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"] }
           }
         },
         {
           "name": "Logout",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/auth/logout",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "logout"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
           }
         },
         {
-          "name": "Mi perfil",
+          "name": "Update Photo",
           "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/auth/me",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "me"]
-            }
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"photo\": \"/images/new-photo.jpg\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/photo", "host": ["{{base_url}}"], "path": ["api", "auth", "photo"] }
           }
         }
       ]
     },
     {
-      "name": "Roles",
+      "name": "Roles & Permissions",
       "item": [
         {
-          "name": "Listar roles",
+          "name": "List roles",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/roles",
-              "host": ["{{base_url}}"],
-              "path": ["api", "roles"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/roles", "host": ["{{base_url}}"], "path": ["api", "roles"] }
           }
         },
         {
-          "name": "Crear rol",
+          "name": "Create role",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Secretaria\",\n  \"guard_name\": \"web\",\n  \"permissions\": [1, 6, 10]\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/roles",
-              "host": ["{{base_url}}"],
-              "path": ["api", "roles"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Secretaria\",\n  \"guard_name\": \"web\",\n  \"permissions\": [1, 6, 10]\n}" },
+            "url": { "raw": "{{base_url}}/api/roles", "host": ["{{base_url}}"], "path": ["api", "roles"] }
           }
         },
         {
-          "name": "Mostrar rol",
+          "name": "Show role",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/roles/1",
-              "host": ["{{base_url}}"],
-              "path": ["api", "roles", "1"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/roles/1", "host": ["{{base_url}}"], "path": ["api", "roles", "1"] }
           }
         },
         {
-          "name": "Actualizar rol",
+          "name": "Update role",
           "request": {
             "method": "PUT",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Administrador General\",\n  \"permissions\": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/roles/1",
-              "host": ["{{base_url}}"],
-              "path": ["api", "roles", "1"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Administrador General\"\n}" },
+            "url": { "raw": "{{base_url}}/api/roles/1", "host": ["{{base_url}}"], "path": ["api", "roles", "1"] }
           }
         },
         {
-          "name": "Sincronizar permisos del rol",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"permissions\": [1, 6, 10]\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/roles/2/permissions",
-              "host": ["{{base_url}}"],
-              "path": ["api", "roles", "2", "permissions"]
-            }
-          }
-        },
-        {
-          "name": "Eliminar rol",
+          "name": "Delete role",
           "request": {
             "method": "DELETE",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/roles/3",
-              "host": ["{{base_url}}"],
-              "path": ["api", "roles", "3"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Permisos",
-      "item": [
-        {
-          "name": "Listar permisos",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/permissions",
-              "host": ["{{base_url}}"],
-              "path": ["api", "permissions"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/roles/3", "host": ["{{base_url}}"], "path": ["api", "roles", "3"] }
           }
         },
         {
-          "name": "Crear permiso",
+          "name": "Sync role permissions",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"permissions\": [1, 6, 10]\n}" },
+            "url": { "raw": "{{base_url}}/api/roles/2/permissions", "host": ["{{base_url}}"], "path": ["api", "roles", "2", "permissions"] }
+          }
+        },
+        {
+          "name": "List permissions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/permissions", "host": ["{{base_url}}"], "path": ["api", "permissions"] }
+          }
+        },
+        {
+          "name": "Create permission",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"citas.listar\",\n  \"guard_name\": \"web\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/permissions",
-              "host": ["{{base_url}}"],
-              "path": ["api", "permissions"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"citas.listar\",\n  \"guard_name\": \"web\"\n}" },
+            "url": { "raw": "{{base_url}}/api/permissions", "host": ["{{base_url}}"], "path": ["api", "permissions"] }
           }
         },
         {
-          "name": "Mostrar permiso",
+          "name": "Show permission",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/permissions/1",
-              "host": ["{{base_url}}"],
-              "path": ["api", "permissions", "1"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/permissions/1", "host": ["{{base_url}}"], "path": ["api", "permissions", "1"] }
           }
         },
         {
-          "name": "Actualizar permiso",
+          "name": "Update permission",
           "request": {
             "method": "PUT",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"citas.ver\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/permissions/12",
-              "host": ["{{base_url}}"],
-              "path": ["api", "permissions", "12"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"citas.ver\"\n}" },
+            "url": { "raw": "{{base_url}}/api/permissions/12", "host": ["{{base_url}}"], "path": ["api", "permissions", "12"] }
+          }
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"] }
+          }
+        },
+        {
+          "name": "Show user",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/users/1", "host": ["{{base_url}}"], "path": ["api", "users", "1"] }
+          }
+        },
+        {
+          "name": "Assign roles to user",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"roles\": [1, 2]\n}" },
+            "url": { "raw": "{{base_url}}/api/users/1/roles", "host": ["{{base_url}}"], "path": ["api", "users", "1", "roles"] }
+          }
+        },
+        {
+          "name": "User permissions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/users/1/permissions", "host": ["{{base_url}}"], "path": ["api", "users", "1", "permissions"] }
           }
         }
       ]
     },
     {
-      "name": "Usuarios",
+      "name": "Branches",
       "item": [
         {
-          "name": "Listar usuarios",
+          "name": "List branches",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/users",
-              "host": ["{{base_url}}"],
-              "path": ["api", "users"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/branches", "host": ["{{base_url}}"], "path": ["api", "admin", "branches"] }
           }
         },
         {
-          "name": "Mostrar usuario",
+          "name": "Create / Update branch",
           "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/users/1",
-              "host": ["{{base_url}}"],
-              "path": ["api", "users", "1"]
-            }
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sede Principal\",\n  \"address\": \"Cra 45 #123-45\",\n  \"contact\": \"3001234567\",\n  \"city\": \"Medellín\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/branches", "host": ["{{base_url}}"], "path": ["api", "admin", "branches"] }
           }
         },
         {
-          "name": "Asignar roles a usuario",
+          "name": "Change branch state",
           "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"roles\": [1, 2]\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/users/1/roles",
-              "host": ["{{base_url}}"],
-              "path": ["api", "users", "1", "roles"]
-            }
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1,\n  \"state\": \"Inactivo\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/branches/state", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", "state"] }
           }
         },
         {
-          "name": "Permisos efectivos del usuario",
+          "name": "Branches select (dropdown)",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/users/1/permissions",
-              "host": ["{{base_url}}"],
-              "path": ["api", "users", "1", "permissions"]
-            }
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/staff/branches/select", "host": ["{{base_url}}"], "path": ["api", "staff", "branches", "select"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dentists",
+      "item": [
+        {
+          "name": "List dentists",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/dentists", "host": ["{{base_url}}"], "path": ["api", "admin", "dentists"] }
+          }
+        },
+        {
+          "name": "Create / Update dentist",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Dr. Juan Pérez\",\n  \"city\": \"Medellín\",\n  \"document\": \"1234567890\",\n  \"email\": \"juan@dentix.com\",\n  \"procedure_ids\": [1, 2]\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/dentists", "host": ["{{base_url}}"], "path": ["api", "admin", "dentists"] }
+          }
+        },
+        {
+          "name": "Show dentist",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/dentists/1", "host": ["{{base_url}}"], "path": ["api", "admin", "dentists", "1"] }
+          }
+        },
+        {
+          "name": "Change dentist state",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1,\n  \"state\": \"Inactivo\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/dentists/state", "host": ["{{base_url}}"], "path": ["api", "admin", "dentists", "state"] }
+          }
+        },
+        {
+          "name": "Get dentist schedule",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/dentists/1/schedule", "host": ["{{base_url}}"], "path": ["api", "admin", "dentists", "1", "schedule"] }
+          }
+        },
+        {
+          "name": "Save dentist schedule",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dentist_id\": 1,\n  \"schedules\": [\n    {\"day\": 1, \"attend\": true, \"hour_start\": \"08:00\", \"hour_end\": \"17:00\", \"break\": true, \"break_start\": \"12:00\", \"break_end\": \"13:00\"},\n    {\"day\": 2, \"attend\": true, \"hour_start\": \"08:00\", \"hour_end\": \"17:00\", \"break\": true, \"break_start\": \"12:00\", \"break_end\": \"13:00\"}\n  ]\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/dentists/schedule", "host": ["{{base_url}}"], "path": ["api", "admin", "dentists", "schedule"] }
+          }
+        },
+        {
+          "name": "Dentists select (dropdown)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/staff/dentists/select", "host": ["{{base_url}}"], "path": ["api", "staff", "dentists", "select"] }
+          }
+        },
+        {
+          "name": "My appointments (dentist)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/dentist/appointments", "host": ["{{base_url}}"], "path": ["api", "dentist", "appointments"] }
+          }
+        },
+        {
+          "name": "My schedule (dentist)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/dentist/schedule", "host": ["{{base_url}}"], "path": ["api", "dentist", "schedule"] }
+          }
+        },
+        {
+          "name": "Save my schedule (dentist)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dentist_id\": 1,\n  \"schedules\": [\n    {\"day\": 1, \"attend\": true, \"hour_start\": \"08:00\", \"hour_end\": \"17:00\", \"break\": true, \"break_start\": \"12:00\", \"break_end\": \"13:00\"}\n  ]\n}" },
+            "url": { "raw": "{{base_url}}/api/dentist/schedule", "host": ["{{base_url}}"], "path": ["api", "dentist", "schedule"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "List patients",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/patients", "host": ["{{base_url}}"], "path": ["api", "admin", "patients"] }
+          }
+        },
+        {
+          "name": "Create / Update patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"María García\",\n  \"telephone\": \"3009876543\",\n  \"document\": \"9876543210\",\n  \"email\": \"maria@example.com\",\n  \"city\": \"Bogotá\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/patients", "host": ["{{base_url}}"], "path": ["api", "admin", "patients"] }
+          }
+        },
+        {
+          "name": "Show patient",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/patients/1", "host": ["{{base_url}}"], "path": ["api", "admin", "patients", "1"] }
+          }
+        },
+        {
+          "name": "Deactivate patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1,\n  \"state\": \"Inactivo\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/patients/deactivate", "host": ["{{base_url}}"], "path": ["api", "admin", "patients", "deactivate"] }
+          }
+        },
+        {
+          "name": "Patients select (dropdown)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/patients/select", "host": ["{{base_url}}"], "path": ["api", "admin", "patients", "select"] }
+          }
+        },
+        {
+          "name": "Find patient by document",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"document\": \"9876543210\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/patients/find-by-document", "host": ["{{base_url}}"], "path": ["api", "admin", "patients", "find-by-document"] }
+          }
+        },
+        {
+          "name": "My profile (patient)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/patient/me", "host": ["{{base_url}}"], "path": ["api", "patient", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Procedures",
+      "item": [
+        {
+          "name": "List procedures",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/procedures", "host": ["{{base_url}}"], "path": ["api", "admin", "procedures"] }
+          }
+        },
+        {
+          "name": "Create / Update procedure",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Limpieza Dental\",\n  \"duration\": 45\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/procedures", "host": ["{{base_url}}"], "path": ["api", "admin", "procedures"] }
+          }
+        },
+        {
+          "name": "Change procedure state",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1,\n  \"state\": \"Inactivo\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/procedures/state", "host": ["{{base_url}}"], "path": ["api", "admin", "procedures", "state"] }
+          }
+        },
+        {
+          "name": "Procedures select (dropdown)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/staff/procedures/select", "host": ["{{base_url}}"], "path": ["api", "staff", "procedures", "select"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "List appointments (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/appointments", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments"] }
+          }
+        },
+        {
+          "name": "Create appointment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"day\": \"2026-07-20\",\n  \"hour\": \"9:00 am\",\n  \"branch_id\": 1,\n  \"patient_id\": 1,\n  \"dentist_procedure_id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/appointments", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments"] }
+          }
+        },
+        {
+          "name": "Show appointment",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/appointments/1", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "1"] }
+          }
+        },
+        {
+          "name": "Change appointment state + bill",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1,\n  \"state\": \"Asistio\",\n  \"payments\": [\n    {\"price\": 150000, \"procedure_id\": 1}\n  ]\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/appointments/state", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "state"] }
+          }
+        },
+        {
+          "name": "Delete appointment (soft)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/appointments/delete", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "delete"] }
+          }
+        },
+        {
+          "name": "Mark WhatsApp sent",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/appointments/whatsapp", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "whatsapp"] }
+          }
+        },
+        {
+          "name": "Mark phone call sent",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/appointments/phone", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "phone"] }
+          }
+        },
+        {
+          "name": "Appointments by document",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/appointments/by-document?document=1234567890", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "by-document"] }
+          }
+        },
+        {
+          "name": "Appointments by patient",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/appointments/by-patient?patient_id=1", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments", "by-patient"] }
+          }
+        },
+        {
+          "name": "Appointment form data",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/staff/appointments/form-data", "host": ["{{base_url}}"], "path": ["api", "staff", "appointments", "form-data"] }
+          }
+        },
+        {
+          "name": "Available slots",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dentist_procedure_id\": 1,\n  \"date\": \"2026-07-20\"\n}" },
+            "url": { "raw": "{{base_url}}/api/staff/appointments/slots", "host": ["{{base_url}}"], "path": ["api", "staff", "appointments", "slots"] }
+          }
+        },
+        {
+          "name": "Dentists by procedure",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"procedure_id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/staff/appointments/by-procedure", "host": ["{{base_url}}"], "path": ["api", "staff", "appointments", "by-procedure"] }
+          }
+        },
+        {
+          "name": "My appointments (patient)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/patient/appointments", "host": ["{{base_url}}"], "path": ["api", "patient", "appointments"] }
+          }
+        },
+        {
+          "name": "Cancel appointment (patient)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/patient/appointments/cancel", "host": ["{{base_url}}"], "path": ["api", "patient", "appointments", "cancel"] }
+          }
+        },
+        {
+          "name": "Patient appointment form data",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/patient/appointments/form-data", "host": ["{{base_url}}"], "path": ["api", "patient", "appointments", "form-data"] }
+          }
+        },
+        {
+          "name": "Patient available slots",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"dentist_procedure_id\": 1,\n  \"date\": \"2026-07-20\"\n}" },
+            "url": { "raw": "{{base_url}}/api/patient/appointments/slots", "host": ["{{base_url}}"], "path": ["api", "patient", "appointments", "slots"] }
+          }
+        },
+        {
+          "name": "Patient create appointment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"day\": \"2026-07-20\",\n  \"hour\": \"9:00 am\",\n  \"branch_id\": 1,\n  \"patient_id\": 1,\n  \"dentist_procedure_id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/patient/appointments", "host": ["{{base_url}}"], "path": ["api", "patient", "appointments"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/products", "host": ["{{base_url}}"], "path": ["api", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Create / Update product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"active_principle\": \"Ibuprofeno\",\n  \"concentration\": \"400mg\",\n  \"amount\": 30,\n  \"pharmaceutical_form\": \"Tabletas\",\n  \"commercial_presentation\": \"Caja x 30\",\n  \"medication_unit\": \"Tableta\",\n  \"batch\": \"BATCH-001\",\n  \"health_register_invima\": \"INVIMA-2020-0001\",\n  \"expiration_date\": \"2027-12-31\",\n  \"date_of_admission\": \"2026-01-15\"\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/products", "host": ["{{base_url}}"], "path": ["api", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Delete product",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/products/1", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Promotions",
+      "item": [
+        {
+          "name": "List promotions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/promotions", "host": ["{{base_url}}"], "path": ["api", "admin", "promotions"] }
+          }
+        },
+        {
+          "name": "Create / Update promotion",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"date_start\": \"2026-07-01\",\n  \"date_end\": \"2026-08-01\",\n  \"details\": \"20% de descuento en limpieza dental\",\n  \"discount\": 20,\n  \"limit_patients\": 50\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/promotions", "host": ["{{base_url}}"], "path": ["api", "admin", "promotions"] }
+          }
+        },
+        {
+          "name": "Deactivate promotion",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/admin/promotions/deactivate", "host": ["{{base_url}}"], "path": ["api", "admin", "promotions", "deactivate"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Staff graph data",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/reports/staff", "host": ["{{base_url}}"], "path": ["api", "admin", "reports", "staff"] }
+          }
+        },
+        {
+          "name": "Billing by patient",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/admin/reports/billing?patient_id=1", "host": ["{{base_url}}"], "path": ["api", "admin", "reports", "billing"] }
           }
         }
       ]

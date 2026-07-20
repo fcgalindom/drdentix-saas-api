@@ -37,12 +37,15 @@ npm run dev              # Vite dev server
 - **PascalCase** for class names, **camelCase** for methods/properties
 - Return types on all methods; avoid docblocks where type hints suffice
 - Migration format: `return new class extends Migration` with typed `up(): void` / `down(): void`
+- **Form Request classes** for all validation — never use `$request->validate([...])` inline. Place under `app/Http/Requests/{Domain}/`, inject into controller method as the typed parameter, and call `$request->validated()`.
 
 ## Architecture
 
 ```
 app/
-├── Http/Controllers/Controller.php   # Abstract base (empty)
+├── Http/Controllers/
+│   └── Api/                           # API controllers (Auth, Branch, Dentist, Patient, etc.)
+├── Http/Requests/                     # Form Request classes per domain (Auth, Branch, Dentist, ...)
 ├── Models/
 │   └── User.php                       # Only model so far
 └── Providers/AppServiceProvider.php   # Empty
@@ -69,9 +72,11 @@ config/                                # 10 config files
 - Controllers extend abstract `Controller` in `App\Http\Controllers`
 
 ### Current State
-- Early-stage: API routes not yet created, only web route for welcome page
-- Domain tables exist (branches, dentists, patients, etc.) but **no models, controllers, or routes** for them
-- User model exists but is out of sync with the users migration (see Notes)
+- API routes active via `routes/api.php` with full CRUD for all domains
+- Controllers exist for all domains (Auth, Branch, Dentist, Patient, Procedure, Product, Promotion, Appointment, Report, User, Role, Permission)
+- Form Request classes used for all validation (never `$request->validate([...])` inline)
+- Domain tables exist (branches, dentists, patients, etc.) with corresponding controllers and form requests
+- User model is out of sync with the users migration (see Notes)
 
 ## Database
 
@@ -156,6 +161,13 @@ class User extends Authenticatable
 4. Create factory in `database/factories/`
 5. Create controller extending `App\Http\Controllers\Controller`
 6. Add resource route in `routes/api.php`
+
+### Adding a New Controller Method with Validation
+1. Create a Form Request in `app/Http/Requests/{Domain}/` extending `Illuminate\Foundation\Http\FormRequest`
+2. Define `rules(): array` returning the validation rules
+3. Inject the Form Request as the controller method parameter (e.g., `StoreBranchRequest $request`)
+4. Use `$request->validated()` to get the validated data
+5. Never use `$request->validate([...])` inline
 
 ### Adding a New Migration
 - Use `php artisan make:migration` or write manually with the anonymous class pattern

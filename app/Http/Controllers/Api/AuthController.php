@@ -3,67 +3,58 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginPatientRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\LoginStaffRequest;
+use App\Http\Requests\Auth\UpdatePhotoRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Authenticate user and return token.
-     *
-     * Receives email and password, validates credentials, and returns a Sanctum token
-     * along with the authenticated user's data including roles and permissions.
-     *
-     * @unauthenticated
-     *
-     * @responseField token string The Sanctum API token. Include this in the Authorization header for subsequent requests.
-     * @responseField user object The authenticated user's data with roles and permissions.
-     */
+    public function __construct(
+        protected AuthService $authService,
+    ) {}
+
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
+        $result = $this->authService->login($request->validated());
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'token' => $token,
-            'user' => new UserResource($user->load('roles.permissions')),
-        ]);
+        return response()->json($result);
     }
 
-    /**
-     * Logout and revoke current token.
-     *
-     * Invalidates the current Bearer token. The token will no longer be accepted.
-     *
-     * @authenticated
-     */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->authService->logout($request->user());
 
         return response()->json(['message' => 'Logged out successfully']);
     }
 
-    /**
-     * Get the authenticated user's profile.
-     *
-     * Returns the current user's information including their assigned roles and permissions.
-     *
-     * @authenticated
-     */
     public function me(Request $request): UserResource
     {
-        $user = $request->user()->load('roles.permissions');
+        return new UserResource($this->authService->me($request->user()));
+    }
 
-        return new UserResource($user);
+    public function loginPatient(LoginPatientRequest $request): JsonResponse
+    {
+        $result = $this->authService->loginPatient($request->validated());
+
+        return response()->json($result);
+    }
+
+    public function loginStaff(LoginStaffRequest $request): JsonResponse
+    {
+        $result = $this->authService->loginStaff($request->validated());
+
+        return response()->json($result);
+    }
+
+    public function updatePhoto(UpdatePhotoRequest $request): JsonResponse
+    {
+        $this->authService->updatePhoto($request->user(), $request->photo);
+
+        return response()->json(['message' => 'Photo updated successfully']);
     }
 }
