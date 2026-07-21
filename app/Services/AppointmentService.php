@@ -60,7 +60,7 @@ class AppointmentService extends Service
             $query->where('day', $date);
         }
 
-        $appointments = $query->orderByRaw("FIELD(state, 'Activo', 'Recordado', 'Cancelado', 'No asistio', 'Pagado')")
+        $appointments = $query->orderByRaw("CASE state WHEN 'Activo' THEN 1 WHEN 'Recordado' THEN 2 WHEN 'Cancelado' THEN 3 WHEN 'No asistio' THEN 4 WHEN 'Pagado' THEN 5 ELSE 6 END")
             ->paginate(15);
 
         $income = $this->model->notDeleted()->sum('pay');
