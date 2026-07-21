@@ -27,11 +27,7 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::create(['name' => 'Administrador', 'guard_name' => 'web']);
         $admin->givePermissionTo(Permission::all());
 
-        $editor = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
-        $editor->givePermissionTo([
-            'roles.listar',
-            'permisos.listar',
-            'usuarios.listar',
-        ]);
+        Role::create(['name' => 'Dentist', 'guard_name' => 'web']);
+        Role::create(['name' => 'Patient', 'guard_name' => 'web']);
     }
 }

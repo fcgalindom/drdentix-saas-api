@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (Schema::hasTable('personal_access_tokens')) {
             Schema::table('personal_access_tokens', function (Blueprint $table) {
-                if (!Schema::hasColumn('personal_access_tokens', 'expires_at')) {
+                if (! Schema::hasColumn('personal_access_tokens', 'expires_at')) {
                     $table->timestamp('expires_at')->nullable()->index()->after('last_used_at');
                 }
             });

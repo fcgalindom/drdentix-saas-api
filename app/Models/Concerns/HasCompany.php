@@ -13,8 +13,10 @@ trait HasCompany
         static::addGlobalScope(new CompanyScope);
 
         static::creating(function ($model) {
-            if (auth()->check() && ! $model->company_id) {
-                $model->company_id = auth()->user()->company_id;
+            if (! $model->company_id) {
+                $model->company_id = auth()->user()->company_id
+                    ?? Company::value('id')
+                    ?? Company::create(['name' => 'Default'])->id;
             }
         });
     }

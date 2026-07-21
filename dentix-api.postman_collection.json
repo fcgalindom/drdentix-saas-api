@@ -1,12 +1,13 @@
 {
   "info": {
     "name": "Dentix API",
-    "description": "Complete API collection for the Dentix dental SaaS platform.\n\n## Setup\n1. Run `php artisan migrate:fresh --seed`\n2. Start the server: `php artisan serve`\n3. Set `base_url` variable (default: `http://localhost:8000`)\n4. First run **Login (Staff)** to auto-save the token",
+    "description": "Complete API collection for the Dentix dental SaaS platform (multi-company).\n\n## Setup\n1. Run `php artisan migrate:fresh --seed`\n2. Start the server: `php artisan serve`\n3. Set `base_url` variable (default: `http://localhost:8000`)\n4. First run **Login (Staff)** to auto-save the token\n5. `company_id` is auto-assigned from the authenticated user — no need to send it in requests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "base_url", "value": "http://localhost:8000", "type": "string" },
-    { "key": "token", "value": "", "type": "string" }
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "company_id", "value": "1", "type": "string" }
   ],
   "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
   "item": [
@@ -18,14 +19,14 @@
           "event": [{
             "listen": "test",
             "script": {
-              "exec": ["if (pm.response.code === 200) { var json = pm.response.json(); pm.collectionVariables.set('token', json.token); }"],
+              "exec": ["if (pm.response.code === 200) { var json = pm.response.json(); pm.collectionVariables.set('token', json.token); if (json.user && json.user.company_id) pm.collectionVariables.set('company_id', json.user.company_id); }"],
               "type": "text/javascript"
             }
           }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dentix.com\",\n  \"password\": \"password\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dental.com\",\n  \"password\": \"admin123\"\n}" },
             "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
           }
         },
@@ -34,7 +35,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"patient@dentix.com\",\n  \"password\": \"1234\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"patient@dental.com\",\n  \"password\": \"patient123\"\n}" },
             "url": { "raw": "{{base_url}}/api/auth/login/patient", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "patient"] }
           }
         },
@@ -43,7 +44,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dentix.com\",\n  \"password\": \"password\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dental.com\",\n  \"password\": \"admin123\"\n}" },
             "url": { "raw": "{{base_url}}/api/auth/login/staff", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "staff"] }
           }
         },
@@ -213,7 +214,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sede Principal\",\n  \"address\": \"Cra 45 #123-45\",\n  \"contact\": \"3001234567\",\n  \"city\": \"Medellín\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sede Principal\",\n  \"address\": \"Cra 45 #123-45\",\n  \"contact\": \"3001234567\",\n  \"city\": \"Medellín\",\n  \"company_id\": 1\n}" },
             "url": { "raw": "{{base_url}}/api/admin/branches", "host": ["{{base_url}}"], "path": ["api", "admin", "branches"] }
           }
         },
@@ -414,7 +415,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Limpieza Dental\",\n  \"duration\": 45\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Limpieza Dental\",\n  \"duration\": 45,\n  \"company_id\": 1\n}" },
             "url": { "raw": "{{base_url}}/api/admin/procedures", "host": ["{{base_url}}"], "path": ["api", "admin", "procedures"] }
           }
         },
@@ -453,7 +454,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"day\": \"2026-07-20\",\n  \"hour\": \"9:00 am\",\n  \"branch_id\": 1,\n  \"patient_id\": 1,\n  \"dentist_procedure_id\": 1\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"day\": \"2026-07-20\",\n  \"hour\": \"9:00 am\",\n  \"branch_id\": 1,\n  \"patient_id\": 1,\n  \"dentist_procedure_id\": 1,\n  \"company_id\": 1\n}" },
             "url": { "raw": "{{base_url}}/api/admin/appointments", "host": ["{{base_url}}"], "path": ["api", "admin", "appointments"] }
           }
         },
@@ -582,7 +583,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"day\": \"2026-07-20\",\n  \"hour\": \"9:00 am\",\n  \"branch_id\": 1,\n  \"patient_id\": 1,\n  \"dentist_procedure_id\": 1\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"day\": \"2026-07-20\",\n  \"hour\": \"9:00 am\",\n  \"branch_id\": 1,\n  \"patient_id\": 1,\n  \"dentist_procedure_id\": 1,\n  \"company_id\": 1\n}" },
             "url": { "raw": "{{base_url}}/api/patient/appointments", "host": ["{{base_url}}"], "path": ["api", "patient", "appointments"] }
           }
         }
@@ -604,7 +605,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"active_principle\": \"Ibuprofeno\",\n  \"concentration\": \"400mg\",\n  \"amount\": 30,\n  \"pharmaceutical_form\": \"Tabletas\",\n  \"commercial_presentation\": \"Caja x 30\",\n  \"medication_unit\": \"Tableta\",\n  \"batch\": \"BATCH-001\",\n  \"health_register_invima\": \"INVIMA-2020-0001\",\n  \"expiration_date\": \"2027-12-31\",\n  \"date_of_admission\": \"2026-01-15\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"active_principle\": \"Ibuprofeno\",\n  \"concentration\": \"400mg\",\n  \"amount\": 30,\n  \"pharmaceutical_form\": \"Tabletas\",\n  \"commercial_presentation\": \"Caja x 30\",\n  \"medication_unit\": \"Tableta\",\n  \"batch\": \"BATCH-001\",\n  \"health_register_invima\": \"INVIMA-2020-0001\",\n  \"expiration_date\": \"2027-12-31\",\n  \"date_of_admission\": \"2026-01-15\",\n  \"company_id\": 1\n}" },
             "url": { "raw": "{{base_url}}/api/admin/products", "host": ["{{base_url}}"], "path": ["api", "admin", "products"] }
           }
         },
@@ -634,7 +635,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"date_start\": \"2026-07-01\",\n  \"date_end\": \"2026-08-01\",\n  \"details\": \"20% de descuento en limpieza dental\",\n  \"discount\": 20,\n  \"limit_patients\": 50\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"date_start\": \"2026-07-01\",\n  \"date_end\": \"2026-08-01\",\n  \"details\": \"20% de descuento en limpieza dental\",\n  \"discount\": 20,\n  \"limit_patients\": 50,\n  \"company_id\": 1\n}" },
             "url": { "raw": "{{base_url}}/api/admin/promotions", "host": ["{{base_url}}"], "path": ["api", "admin", "promotions"] }
           }
         },

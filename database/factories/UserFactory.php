@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'document' => fake()->unique()->numerify('##########'),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'type_user' => fake()->randomElement(['Administrador', 'Editor', 'Usuario']),
+            'type_user' => fake()->randomElement(['Administrator', 'Dentist', 'Patient']),
             'birth' => fake()->date(),
             'photo' => '/images/default.jpg',
             'state' => 'Activo',
