@@ -13,16 +13,12 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $this->call(RolePermissionSeeder::class);
-
-        $company = Company::create(['name' => 'Dentix Principal']);
-
-        User::factory()->create([
-            'company_id' => $company->id,
-            'document' => '1234567890',
-            'email' => 'admin@dentix.com',
-            'password' => bcrypt('password'),
-            'type_user' => 'Administrador',
-        ])->assignRole('Administrador');
+        User::create([
+            'document'  => 'admin',
+            'email'     => 'admin@dental.com',
+            'password'  => \Illuminate\Support\Facades\Hash::make('admin123'),
+            'type_user' => 'Administrator',
+            'state'     => 'Activo',
+        ]);
     }
 }
