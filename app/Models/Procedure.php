@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Procedure extends Model
 {
-    protected $fillable = ['name', 'duration', 'state'];
+    use HasCompany;
+
+    protected $fillable = ['company_id', 'name', 'duration', 'state'];
 
     public function dentists()
     {

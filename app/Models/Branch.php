@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
-    protected $fillable = ['address', 'name', 'contact', 'city', 'state'];
+    use HasCompany;
+
+    protected $fillable = ['company_id', 'address', 'name', 'contact', 'city', 'state'];
 
     public function appointments()
     {

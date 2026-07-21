@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
-    protected $fillable = ['price', 'procedure_id', 'appointment_id'];
+    use HasCompany;
+
+    protected $fillable = ['company_id', 'price', 'procedure_id', 'appointment_id'];
 
     public function appointment()
     {

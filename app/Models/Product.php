@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use HasCompany, SoftDeletes;
 
     protected $fillable = [
-        'active_principle', 'concentration', 'amount', 'pharmaceutical_form',
+        'company_id', 'active_principle', 'concentration', 'amount', 'pharmaceutical_form',
         'commercial_presentation', 'medication_unit', 'batch',
         'health_register_invima', 'expiration_date', 'semaphore', 'date_of_admission',
     ];

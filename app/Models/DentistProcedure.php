@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class DentistProcedure extends Model
 {
+    use HasCompany;
+
     protected $table = 'dentist_procedures';
 
-    protected $fillable = ['procedure_id', 'dentist_id'];
+    protected $fillable = ['company_id', 'procedure_id', 'dentist_id'];
 
     public function dentist()
     {

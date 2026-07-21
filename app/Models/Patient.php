@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Patient extends Model
 {
+    use HasCompany;
+
     protected $table = 'patients';
 
-    protected $fillable = ['name', 'city', 'telephone', 'id_user'];
+    protected $fillable = ['company_id', 'name', 'city', 'telephone', 'id_user'];
 
     public function user()
     {

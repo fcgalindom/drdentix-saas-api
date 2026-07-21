@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -10,14 +11,14 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call(RolePermissionSeeder::class);
 
+        $company = Company::create(['name' => 'Dentix Principal']);
+
         User::factory()->create([
+            'company_id' => $company->id,
             'document' => '1234567890',
             'email' => 'admin@dentix.com',
             'password' => bcrypt('password'),
