@@ -30,38 +30,9 @@ class AppointmentController extends Controller
 
     public function index(Request $request)
     {
-        $query = Appointment::with(['patient.user', 'branch', 'dentistProcedure.dentist', 'dentistProcedure.procedure'])
-            ->notDeleted();
-
-        if ($request->filled('patient')) {
-            $query->whereHas('patient', fn($q) => $q->where('name', 'like', '%' . $request->patient . '%'))
-                ->orWhereHas('patient.user', fn($q) => $q->where('document', 'like', '%' . $request->patient . '%'));
-        }
-        if ($request->filled('date_from')) {
-            $query->where('day', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->where('day', '<=', $request->date_to);
-        }
-        if ($request->filled('dentist_id')) {
-            $query->whereHas('dentistProcedure', fn($q) => $q->where('dentist_id', $request->dentist_id));
-        }
-        if ($request->filled('state')) {
-            $query->where('state', $request->state);
-        }
-
-        // Default to today if no date filters given
-        if (!$request->filled('date_from') && !$request->filled('date_to')) {
-            $offset = (int) $request->get('advance', 0);
-            $date = now()->addDays($offset)->toDateString();
-            $query->where('day', $date);
-        }
-
-        $appointments = $query->orderByRaw("CASE state WHEN 'Activo' THEN 1 WHEN 'Recordado' THEN 2 WHEN 'Cancelado' THEN 3 WHEN 'No asistio' THEN 4 WHEN 'Pagado' THEN 5 ELSE 6 END")
-            ->paginate(15);
-
-        $income = Appointment::notDeleted()->sum('pay');
-        $pending = Appointment::whereIn('state', ['Activo', 'Recordado'])->count();
+        $result = $this->appointmentService->listAll(
+            $request->only('patient', 'date_from', 'date_to', 'dentist_id', 'state', 'advance')
+        );
 
         return response()->json([
             'data' => AppointmentResource::collection($result['appointments'])->response()->getData(true),
