@@ -44,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/photo', [AuthController::class, 'updatePhoto']);
 
     // ── Administrator only ──────────────────────────────────────────────────
-    Route::middleware('role:Administrator')->prefix('admin')->group(function () {
+    Route::middleware(['company', 'role:Administrator'])->prefix('admin')->group(function () {
 
         // Branches
         Route::get('/branches', [BranchController::class, 'index']);
@@ -99,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ── Administrator + Dentist ────────────────────────────────────────────────
-    Route::middleware('role:Administrator,Dentist')->prefix('staff')->group(function () {
+    Route::middleware(['company', 'role:Administrator,Dentist'])->prefix('staff')->group(function () {
 
         Route::get('/branches/select', [BranchController::class, 'select']);
         Route::get('/procedures/select', [ProcedureController::class, 'select']);
@@ -111,7 +111,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ── Dentist only ───────────────────────────────────────────────────────────
-    Route::middleware('role:Dentist')->prefix('dentist')->group(function () {
+    Route::middleware(['company', 'role:Dentist'])->prefix('dentist')->group(function () {
 
         Route::get('/schedule', [DentistController::class, 'getSchedule']);
         Route::post('/schedule', [DentistController::class, 'storeSchedule']);
@@ -120,7 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ── Patient only ───────────────────────────────────────────────────────────
-    Route::middleware('role:Patient')->prefix('patient')->group(function () {
+    Route::middleware(['company', 'role:Patient'])->prefix('patient')->group(function () {
 
         Route::get('/me', [PatientController::class, 'me']);
         Route::post('/appointments', [AppointmentController::class, 'store']);

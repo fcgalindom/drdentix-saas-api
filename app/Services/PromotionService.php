@@ -14,16 +14,18 @@ class PromotionService extends Service
 
     public function listAll(): LengthAwarePaginator
     {
-        return $this->model->orderByDesc('date_start')->paginate(15);
+        return $this->model->where('company_id', $this->companyId())->orderByDesc('date_start')->paginate(15);
     }
 
     public function save(array $data, ?int $id = null): Promotion
     {
+        $data['company_id'] = $this->companyId();
+
         return $this->model->updateOrCreate(['id' => $id], $data);
     }
 
     public function deactivate(int $id): void
     {
-        $this->find($id)->update(['status' => 0]);
+        $this->model->where('company_id', $this->companyId())->findOrFail($id)->update(['status' => 0]);
     }
 }

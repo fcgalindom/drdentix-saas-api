@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,39 +13,25 @@ abstract class Service
      */
     public function __construct(protected Model $model) {}
 
-    /**
-     * Recupera todos los registros de la entidad.
-     *
-     * @return Collection
-     */
-    /**
-     * Recupera todos los registros de la entidad.
-     *
-     * @return Collection
-     */
     public function all()
     {
-        return $this->model->all();
+        return $this->model->where('company_id', $this->companyId())->get();
     }
 
-    /**
-     * Busca un registro por su clave primaria o lanza una excepción si no existe.
-     *
-     * @return Model|ModelNotFoundException
-     */
     public function find(int $id)
     {
-        return $this->model->findOrFail($id);
+        return $this->model->where('company_id', $this->companyId())->findOrFail($id);
     }
 
-    /**
-     * Crea un nuevo registro mediante asignación masiva.
-     *
-     * @param  array  $data  Datos a persistir.
-     * @return Model
-     */
+    protected function companyId(): int
+    {
+        return auth()->user()->company_id;
+    }
+
     public function create(array $data)
     {
+        $data['company_id'] = $data['company_id'] ?? $this->companyId();
+
         return $this->model->create($data);
     }
 
@@ -80,15 +64,9 @@ abstract class Service
         return $data;
     }
 
-    /**
-     * Cambia el estado de activación lógica de un registro.
-     *
-     * @param  mixed  $newActive  Valor que representa el nuevo estado (true/false, 1/0, 'on').
-     * @return void
-     */
     public function changeActive($newActive, Model $model)
     {
-        DB::transaction(function () use ($newActive, $model) {
+        return DB::transaction(function () use ($newActive, $model) {
             $active = filter_var($newActive, FILTER_VALIDATE_BOOLEAN);
             $model->is_active = $active;
             $model->save();
@@ -97,16 +75,9 @@ abstract class Service
         });
     }
 
-    /**
-     * Recupera todos los registros que se encuentran en estado activo.
-     *
-     * @return Collection
-     */
     public function getAllActive()
     {
-        $model = $this->model->where('is_active', 1)->get();
-
-        return $model;
+        return $this->model->where('company_id', $this->companyId())->where('is_active', 1)->get();
     }
 
     /**

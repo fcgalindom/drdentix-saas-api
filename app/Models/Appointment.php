@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
 {
-    use HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = [
         'company_id', 'day', 'hour', 'branch_id', 'patient_id',

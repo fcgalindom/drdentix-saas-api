@@ -16,17 +16,19 @@ class ProcedureService extends Service
 
     public function listAll(): LengthAwarePaginator
     {
-        return $this->model->orderBy('name')->paginate(15);
+        return $this->model->where('company_id', $this->companyId())->orderBy('name')->paginate(15);
     }
 
     public function save(array $data, ?int $id = null): Procedure
     {
+        $data['company_id'] = $this->companyId();
+
         return DB::transaction(fn () => $this->model->updateOrCreate(['id' => $id], $data));
     }
 
     public function changeState(int $id, string $state): Procedure
     {
-        $procedure = $this->find($id);
+        $procedure = $this->model->where('company_id', $this->companyId())->findOrFail($id);
         $procedure->update(['state' => $state]);
 
         return $procedure;
@@ -35,6 +37,7 @@ class ProcedureService extends Service
     public function select(): Collection
     {
         return $this->model
+            ->where('company_id', $this->companyId())
             ->where('state', 'Activo')
             ->orderBy('name')
             ->get(['id', 'name', 'duration']);

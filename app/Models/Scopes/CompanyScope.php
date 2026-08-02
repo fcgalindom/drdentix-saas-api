@@ -10,7 +10,9 @@ class CompanyScope implements Scope
 {
     public function apply(Builder $builder, Model $model): void
     {
-        if ($companyId = auth()->user()?->company_id) {
+        $companyId = auth()->user()?->company_id;
+
+        if ($companyId) {
             $builder->where($model->getTable().'.company_id', $companyId);
         }
     }

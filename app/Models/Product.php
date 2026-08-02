@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasCompany, SoftDeletes;
+    use HasCompany, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'company_id', 'active_principle', 'concentration', 'amount', 'pharmaceutical_form',

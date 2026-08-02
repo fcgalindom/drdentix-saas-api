@@ -17,7 +17,7 @@ class PatientService extends Service
 
     public function listAll(array $filters): LengthAwarePaginator
     {
-        $query = $this->model->with('user')
+        $query = $this->model->where('company_id', $this->companyId())->with('user')
             ->withCount(['appointments as paid_count' => fn ($q) => $q->where('state', 'Pagado')]);
 
         if ($name = $filters['name'] ?? null) {
@@ -35,9 +35,11 @@ class PatientService extends Service
 
     public function save(array $data, ?int $id = null): Patient
     {
-        return DB::transaction(function () use ($data, $id) {
+        $companyId = $this->companyId();
+
+        return DB::transaction(function () use ($data, $id, $companyId) {
             if ($id) {
-                $patient = $this->model->findOrFail($id);
+                $patient = $this->model->where('company_id', $companyId)->findOrFail($id);
                 $patient->update([
                     'name' => $data['name'],
                     'city' => $data['city'] ?? null,
@@ -50,6 +52,7 @@ class PatientService extends Service
                 ]));
             } else {
                 $user = User::create([
+                    'company_id' => $companyId,
                     'document' => $data['document'],
                     'email' => $data['email'] ?? null,
                     'password' => $this->hashPassword('1234'),
@@ -58,6 +61,7 @@ class PatientService extends Service
                     'birth' => $data['birth'] ?? null,
                 ]);
                 $patient = $this->model->create([
+                    'company_id' => $companyId,
                     'name' => $data['name'],
                     'city' => $data['city'] ?? null,
                     'telephone' => '+57'.ltrim($data['telephone'], '+57'),
@@ -71,19 +75,19 @@ class PatientService extends Service
 
     public function findById(int $id): Patient
     {
-        return $this->model->with('user')->findOrFail($id);
+        return $this->model->where('company_id', $this->companyId())->with('user')->findOrFail($id);
     }
 
     public function me(User $user): Patient
     {
-        return $this->model->with('user')
+        return $this->model->where('company_id', $this->companyId())->with('user')
             ->where('id_user', $user->id)
             ->firstOrFail();
     }
 
     public function deactivate(int $id, string $state): void
     {
-        $patient = $this->model->with('user')->findOrFail($id);
+        $patient = $this->model->where('company_id', $this->companyId())->with('user')->findOrFail($id);
         $patient->user->update([
             'state' => $state,
             'email' => time().'@gmail.com',
@@ -93,7 +97,7 @@ class PatientService extends Service
 
     public function select(): Collection
     {
-        return $this->model->with('user')
+        return $this->model->where('company_id', $this->companyId())->with('user')
             ->whereHas('user', fn ($q) => $q->where('state', 'Activo'))
             ->get()
             ->map(fn ($p) => ['id' => $p->id, 'text' => $p->user->document.' - '.$p->name]);
@@ -101,7 +105,10 @@ class PatientService extends Service
 
     public function findByDocument(string $document): array
     {
-        $user = User::where('document', $document)->where('type_user', 'Patient')->first();
+        $user = User::where('company_id', $this->companyId())
+            ->where('document', $document)
+            ->where('type_user', 'Patient')
+            ->first();
 
         if (! $user) {
             return ['status' => 422];

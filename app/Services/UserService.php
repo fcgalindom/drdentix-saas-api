@@ -14,7 +14,9 @@ class UserService extends Service
 
     public function listAll(): Collection
     {
-        return $this->model->with('roles.permissions')->get();
+        return $this->model->with('roles.permissions')
+            ->where('company_id', $this->companyId())
+            ->get();
     }
 
     public function findById(int $id): User

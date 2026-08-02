@@ -15,11 +15,12 @@ class ProductService extends Service
 
     public function listAll(): LengthAwarePaginator
     {
-        return $this->model->orderBy('active_principle')->paginate(15);
+        return $this->model->where('company_id', $this->companyId())->orderBy('active_principle')->paginate(15);
     }
 
     public function save(array $data, ?int $id = null): Product
     {
+        $data['company_id'] = $this->companyId();
         $expiry = Carbon::parse($data['expiration_date']);
         $monthsLeft = now()->diffInMonths($expiry, false);
 
@@ -34,6 +35,6 @@ class ProductService extends Service
 
     public function delete(int $id): void
     {
-        $this->find($id)->delete();
+        $this->model->where('company_id', $this->companyId())->findOrFail($id)->delete();
     }
 }

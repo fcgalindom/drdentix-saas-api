@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Schedule extends Model
 {
-    use HasCompany;
+    use HasCompany, HasFactory;
 
     protected $fillable = [
         'company_id', 'hour_start', 'hour_end', 'break', 'break_start',

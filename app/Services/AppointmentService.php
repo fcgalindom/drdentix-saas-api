@@ -22,10 +22,12 @@ class AppointmentService extends Service
 
     public function formData(): array
     {
+        $companyId = $this->companyId();
+
         return [
-            'branches' => Branch::where('state', 'Activo')->orderBy('name')->get(['id', 'name']),
-            'procedures' => Procedure::where('state', 'Activo')->orderBy('name')->get(['id', 'name', 'duration']),
-            'patients' => Patient::with('user')
+            'branches' => Branch::where('company_id', $companyId)->where('state', 'Activo')->orderBy('name')->get(['id', 'name']),
+            'procedures' => Procedure::where('company_id', $companyId)->where('state', 'Activo')->orderBy('name')->get(['id', 'name', 'duration']),
+            'patients' => Patient::where('company_id', $companyId)->with('user')
                 ->whereHas('user', fn ($q) => $q->where('state', 'Activo'))
                 ->get()->map(fn ($p) => ['id' => $p->id, 'text' => $p->user->document.' - '.$p->name]),
             'min_date' => now()->toDateString(),
@@ -34,7 +36,9 @@ class AppointmentService extends Service
 
     public function listAll(array $filters): array
     {
-        $query = $this->model->with(['patient.user', 'branch', 'dentistProcedure.dentist', 'dentistProcedure.procedure'])
+        $companyId = $this->companyId();
+
+        $query = $this->model->where('company_id', $companyId)->with(['patient.user', 'branch', 'dentistProcedure.dentist', 'dentistProcedure.procedure'])
             ->notDeleted();
 
         if ($patient = $filters['patient'] ?? null) {
@@ -63,8 +67,8 @@ class AppointmentService extends Service
         $appointments = $query->orderByRaw("FIELD(state, 'Activo', 'Recordado', 'Cancelado', 'No asistio', 'Pagado')")
             ->paginate(15);
 
-        $income = $this->model->notDeleted()->sum('pay');
-        $pending = $this->model->whereIn('state', ['Activo', 'Recordado'])->count();
+        $income = $this->model->where('company_id', $companyId)->notDeleted()->sum('pay');
+        $pending = $this->model->where('company_id', $companyId)->whereIn('state', ['Activo', 'Recordado'])->count();
 
         return [
             'appointments' => $appointments,
@@ -103,13 +107,14 @@ class AppointmentService extends Service
     public function findById(int $id): Appointment
     {
         return $this->model
+            ->where('company_id', $this->companyId())
             ->with(['patient.user', 'branch', 'dentistProcedure.dentist', 'dentistProcedure.procedure', 'invoices.procedure'])
             ->findOrFail($id);
     }
 
     public function changeState(int $id, string $state, ?array $payments): Appointment
     {
-        $appointment = $this->model->with(['patient.user', 'invoices'])->findOrFail($id);
+        $appointment = $this->model->where('company_id', $this->companyId())->with(['patient.user', 'invoices'])->findOrFail($id);
         $resolvedState = $state === 'Asistio' ? 'Pagado' : $state;
 
         $totalPay = 0;
@@ -157,6 +162,7 @@ class AppointmentService extends Service
         $id = $patientId ?? $user->patient->id;
 
         return $this->model
+            ->where('company_id', $this->companyId())
             ->with(['dentistProcedure.dentist', 'dentistProcedure.procedure', 'branch', 'invoices.procedure'])
             ->where('patient_id', $id)
             ->orderByDesc('day')
@@ -166,6 +172,7 @@ class AppointmentService extends Service
     public function byDocument(string $document): LengthAwarePaginator
     {
         return $this->model
+            ->where('company_id', $this->companyId())
             ->with(['dentistProcedure.dentist', 'dentistProcedure.procedure', 'branch', 'invoices.procedure'])
             ->whereHas('patient.user', fn ($q) => $q->where('document', $document))
             ->orderByDesc('day')
@@ -174,7 +181,9 @@ class AppointmentService extends Service
 
     public function availableSlots(int $dentistProcedureId, string $date): array
     {
-        $dentistProcedure = DentistProcedure::with(['dentist.schedules', 'procedure'])->findOrFail($dentistProcedureId);
+        $companyId = $this->companyId();
+
+        $dentistProcedure = DentistProcedure::where('company_id', $companyId)->with(['dentist.schedules', 'procedure'])->findOrFail($dentistProcedureId);
         $carbonDate = Carbon::parse($date);
 
         if ($carbonDate->isSunday()) {
@@ -204,7 +213,7 @@ class AppointmentService extends Service
 
     public function dentistsByProcedure(int $procedureId): Collection
     {
-        return DentistProcedure::with(['dentist.user', 'dentist.schedules'])
+        return DentistProcedure::where('company_id', $this->companyId())->with(['dentist.user', 'dentist.schedules'])
             ->where('procedure_id', $procedureId)
             ->get();
     }
@@ -212,6 +221,7 @@ class AppointmentService extends Service
     public function markWhatsapp(int $id): array
     {
         $appointment = $this->model
+            ->where('company_id', $this->companyId())
             ->with(['patient.user', 'branch', 'dentistProcedure.dentist', 'dentistProcedure.procedure'])
             ->findOrFail($id);
 

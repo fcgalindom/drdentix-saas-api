@@ -17,13 +17,15 @@ class ReportService extends Service
     public function staffGraph(): Collection
     {
         return $this->model->with('dentist')
+            ->where('company_id', $this->companyId())
             ->where('state', 'Activo')
             ->get();
     }
 
     public function billingByPatient(int $patientId): LengthAwarePaginator
     {
-        return Appointment::with(['dentistProcedure.dentist', 'dentistProcedure.procedure', 'branch', 'invoices.procedure'])
+        return Appointment::where('company_id', $this->companyId())
+            ->with(['dentistProcedure.dentist', 'dentistProcedure.procedure', 'branch', 'invoices.procedure'])
             ->where('patient_id', $patientId)
             ->where('state', 'Pagado')
             ->orderByDesc('day')

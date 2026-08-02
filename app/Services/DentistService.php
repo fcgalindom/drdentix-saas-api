@@ -20,6 +20,7 @@ class DentistService extends Service
     public function listAll(array $filters): LengthAwarePaginator
     {
         $query = $this->model->with(['user', 'procedures'])
+            ->where('company_id', $this->companyId())
             ->whereHas('user', fn ($q) => $q->where('state', 'Activo'));
 
         if ($name = $filters['name'] ?? null) {
@@ -37,9 +38,11 @@ class DentistService extends Service
 
     public function save(array $data, ?int $id = null): Dentist
     {
-        return DB::transaction(function () use ($data, $id) {
+        $companyId = $this->companyId();
+
+        return DB::transaction(function () use ($data, $id, $companyId) {
             if ($id) {
-                $dentist = $this->model->findOrFail($id);
+                $dentist = $this->model->where('company_id', $companyId)->findOrFail($id);
                 $dentist->update(['name' => $data['name'], 'city' => $data['city']]);
                 $dentist->user->update(array_filter([
                     'document' => $data['document'],
@@ -48,6 +51,7 @@ class DentistService extends Service
                 ]));
             } else {
                 $user = User::create([
+                    'company_id' => $companyId,
                     'document' => $data['document'],
                     'email' => $data['email'] ?? null,
                     'password' => $this->hashPassword($data['password'] ?? '1234'),
@@ -56,6 +60,7 @@ class DentistService extends Service
                     'birth' => $data['birth'] ?? null,
                 ]);
                 $dentist = $this->model->create([
+                    'company_id' => $companyId,
                     'name' => $data['name'],
                     'city' => $data['city'],
                     'id_user' => $user->id,
@@ -66,6 +71,7 @@ class DentistService extends Service
                 DentistProcedure::where('dentist_id', $dentist->id)->delete();
                 foreach ($data['procedure_ids'] as $procedureId) {
                     DentistProcedure::create([
+                        'company_id' => $companyId,
                         'dentist_id' => $dentist->id,
                         'procedure_id' => $procedureId,
                     ]);
@@ -78,12 +84,12 @@ class DentistService extends Service
 
     public function findById(int $id): Dentist
     {
-        return $this->model->with(['user', 'procedures', 'schedules'])->findOrFail($id);
+        return $this->model->where('company_id', $this->companyId())->with(['user', 'procedures', 'schedules'])->findOrFail($id);
     }
 
     public function changeState(int $id, string $state): Dentist
     {
-        $dentist = $this->model->with('user')->findOrFail($id);
+        $dentist = $this->model->where('company_id', $this->companyId())->with('user')->findOrFail($id);
         $dentist->user->update(['state' => $state]);
 
         return $dentist->load('user');
@@ -92,6 +98,7 @@ class DentistService extends Service
     public function select(): Collection
     {
         return $this->model->with('user')
+            ->where('company_id', $this->companyId())
             ->whereHas('user', fn ($q) => $q->where('state', 'Activo'))
             ->orderBy('name')
             ->get(['id', 'name']);
@@ -101,19 +108,21 @@ class DentistService extends Service
     {
         $id = $dentistId ?? $user?->dentist?->id;
 
-        return Schedule::where('dentist_id', $id)->get();
+        return Schedule::where('company_id', auth()->user()->company_id)->where('dentist_id', $id)->get();
     }
 
     public function saveSchedule(array $data): Collection
     {
+        $companyId = auth()->user()->company_id;
+
         foreach ($data['schedules'] as $slot) {
             Schedule::updateOrCreate(
-                ['dentist_id' => $data['dentist_id'], 'day' => $slot['day']],
-                $slot + ['dentist_id' => $data['dentist_id']],
+                ['company_id' => $companyId, 'dentist_id' => $data['dentist_id'], 'day' => $slot['day']],
+                $slot + ['dentist_id' => $data['dentist_id'], 'company_id' => $companyId],
             );
         }
 
-        return Schedule::where('dentist_id', $data['dentist_id'])->get();
+        return Schedule::where('company_id', $companyId)->where('dentist_id', $data['dentist_id'])->get();
     }
 
     public function myAppointments(User $user, ?string $date): Collection
