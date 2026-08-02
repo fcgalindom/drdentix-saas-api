@@ -19,7 +19,7 @@ class UserFactory extends Factory
             'company_id' => 1,
             'document' => fake()->unique()->numerify('##########'),
             'email' => fake()->unique()->safeEmail(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => Hash::make('password'),
             'type_user' => fake()->randomElement(['Administrator', 'Dentist', 'Patient']),
             'birth' => fake()->date(),
             'photo' => '/images/default.jpg',
