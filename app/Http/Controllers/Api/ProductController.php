@@ -15,7 +15,13 @@ class ProductController extends Controller
 
     public function index()
     {
-        return ProductResource::collection($this->productService->listAll());
+        $filters = request()->only(['active_principle', 'semaphore']);
+        return ProductResource::collection($this->productService->listAll($filters));
+    }
+
+    public function activePrinciples()
+    {
+        return response()->json($this->productService->activePrinciples());
     }
 
     public function store(StoreProductRequest $request)

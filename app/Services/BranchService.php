@@ -13,9 +13,19 @@ class BranchService extends Service
         parent::__construct($branch);
     }
 
-    public function listAll(): LengthAwarePaginator
+    public function listAll(array $filters = []): LengthAwarePaginator
     {
-        return $this->model->where('company_id', $this->companyId())->orderBy('name')->paginate(15);
+        $query = $this->model->where('company_id', $this->companyId());
+
+        if (!empty($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (!empty($filters['city'])) {
+            $query->where('city', 'like', '%' . $filters['city'] . '%');
+        }
+
+        return $query->orderBy('name')->paginate(15);
     }
 
     public function save(array $data, ?int $id = null): Branch
@@ -40,5 +50,15 @@ class BranchService extends Service
             ->where('state', 'Activo')
             ->orderBy('name')
             ->get(['id', 'name']);
+    }
+
+    public function cities(): Collection
+    {
+        return $this->model
+            ->where('company_id', $this->companyId())
+            ->whereNotNull('city')
+            ->distinct()
+            ->orderBy('city')
+            ->get(['city']);
     }
 }

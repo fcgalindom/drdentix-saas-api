@@ -16,7 +16,8 @@ class BranchController extends Controller
 
     public function index()
     {
-        return BranchResource::collection($this->branchService->listAll());
+        $filters = request()->only(['name', 'city']);
+        return BranchResource::collection($this->branchService->listAll($filters));
     }
 
     public function store(StoreBranchRequest $request)
@@ -41,5 +42,10 @@ class BranchController extends Controller
     public function select()
     {
         return $this->branchService->select();
+    }
+
+    public function cities()
+    {
+        return $this->branchService->cities();
     }
 }

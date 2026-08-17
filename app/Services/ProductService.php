@@ -13,9 +13,28 @@ class ProductService extends Service
         parent::__construct($product);
     }
 
-    public function listAll(): LengthAwarePaginator
+    public function listAll(array $filters = []): LengthAwarePaginator
     {
-        return $this->model->where('company_id', $this->companyId())->orderBy('active_principle')->paginate(15);
+        $query = $this->model->where('company_id', $this->companyId());
+
+        if (!empty($filters['active_principle'])) {
+            $query->where('active_principle', 'like', '%' . $filters['active_principle'] . '%');
+        }
+
+        if (!empty($filters['semaphore'])) {
+            $query->where('semaphore', $filters['semaphore']);
+        }
+
+        return $query->orderBy('active_principle')->paginate(15);
+    }
+
+    public function activePrinciples(): \Illuminate\Support\Collection
+    {
+        return $this->model
+            ->where('company_id', $this->companyId())
+            ->distinct()
+            ->orderBy('active_principle')
+            ->pluck('active_principle');
     }
 
     public function save(array $data, ?int $id = null): Product

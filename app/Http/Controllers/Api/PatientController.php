@@ -52,6 +52,16 @@ class PatientController extends Controller
         return $this->patientService->select();
     }
 
+    public function cities()
+    {
+        return response()->json($this->patientService->cities());
+    }
+
+    public function names()
+    {
+        return response()->json($this->patientService->names());
+    }
+
     public function findByDocument(FindByDocumentRequest $request)
     {
         $result = $this->patientService->findByDocument($request->document);

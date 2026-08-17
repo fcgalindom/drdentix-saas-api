@@ -14,9 +14,19 @@ class ProcedureService extends Service
         parent::__construct($procedure);
     }
 
-    public function listAll(): LengthAwarePaginator
+    public function listAll(array $filters = []): LengthAwarePaginator
     {
-        return $this->model->where('company_id', $this->companyId())->orderBy('name')->paginate(15);
+        $query = $this->model->where('company_id', $this->companyId());
+
+        if (!empty($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (!empty($filters['duration'])) {
+            $query->where('duration', $filters['duration']);
+        }
+
+        return $query->orderBy('name')->paginate(15);
     }
 
     public function save(array $data, ?int $id = null): Procedure

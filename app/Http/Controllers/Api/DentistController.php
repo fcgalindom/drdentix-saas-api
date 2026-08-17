@@ -48,6 +48,16 @@ class DentistController extends Controller
         return $this->dentistService->select();
     }
 
+    public function names()
+    {
+        return response()->json($this->dentistService->names());
+    }
+
+    public function cities()
+    {
+        return response()->json($this->dentistService->cities());
+    }
+
     public function getSchedule(Request $request)
     {
         return ScheduleResource::collection(

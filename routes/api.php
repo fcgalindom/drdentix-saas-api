@@ -54,18 +54,22 @@ Route::middleware('auth:sanctum')->group(function () {
         // Dentists
         Route::get('/dentists', [DentistController::class, 'index']);
         Route::post('/dentists', [DentistController::class, 'store']);
-        Route::get('/dentists/{dentist}', [DentistController::class, 'show']);
+        Route::get('/dentists/names', [DentistController::class, 'names']);
+        Route::get('/dentists/cities', [DentistController::class, 'cities']);
         Route::post('/dentists/state', [DentistController::class, 'changeState']);
-        Route::get('/dentists/{dentist}/schedule', [DentistController::class, 'getSchedule']);
         Route::post('/dentists/schedule', [DentistController::class, 'storeSchedule']);
+        Route::get('/dentists/{dentist}', [DentistController::class, 'show']);
+        Route::get('/dentists/{dentist}/schedule', [DentistController::class, 'getSchedule']);
 
         // Patients
         Route::get('/patients', [PatientController::class, 'index']);
         Route::post('/patients', [PatientController::class, 'store']);
-        Route::get('/patients/{patient}', [PatientController::class, 'show']);
-        Route::post('/patients/deactivate', [PatientController::class, 'deactivate']);
         Route::get('/patients/select', [PatientController::class, 'select']);
+        Route::get('/patients/cities', [PatientController::class, 'cities']);
+        Route::get('/patients/names', [PatientController::class, 'names']);
+        Route::post('/patients/deactivate', [PatientController::class, 'deactivate']);
         Route::post('/patients/find-by-document', [PatientController::class, 'findByDocument']);
+        Route::get('/patients/{patient}', [PatientController::class, 'show']);
 
         // Procedures
         Route::get('/procedures', [ProcedureController::class, 'index']);
@@ -85,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Products
         Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/products/active-principles', [ProductController::class, 'activePrinciples']);
         Route::post('/products', [ProductController::class, 'store']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
@@ -102,6 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['company', 'role:Administrator,Dentist'])->prefix('staff')->group(function () {
 
         Route::get('/branches/select', [BranchController::class, 'select']);
+        Route::get('/branches/cities', [BranchController::class, 'cities']);
         Route::get('/procedures/select', [ProcedureController::class, 'select']);
         Route::get('/dentists/select', [DentistController::class, 'select']);
 

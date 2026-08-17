@@ -104,6 +104,25 @@ class DentistService extends Service
             ->get(['id', 'name']);
     }
 
+    public function names(): \Illuminate\Support\Collection
+    {
+        return $this->model
+            ->where('company_id', $this->companyId())
+            ->distinct()
+            ->orderBy('name')
+            ->pluck('name');
+    }
+
+    public function cities(): \Illuminate\Support\Collection
+    {
+        return $this->model
+            ->where('company_id', $this->companyId())
+            ->whereNotNull('city')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+    }
+
     public function getSchedule(?int $dentistId, ?User $user): Collection
     {
         $id = $dentistId ?? $user?->dentist?->id;

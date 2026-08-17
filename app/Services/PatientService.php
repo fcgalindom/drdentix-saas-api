@@ -103,6 +103,25 @@ class PatientService extends Service
             ->map(fn ($p) => ['id' => $p->id, 'text' => $p->user->document.' - '.$p->name]);
     }
 
+    public function cities(): \Illuminate\Support\Collection
+    {
+        return $this->model
+            ->where('company_id', $this->companyId())
+            ->whereNotNull('city')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+    }
+
+    public function names(): \Illuminate\Support\Collection
+    {
+        return $this->model
+            ->where('company_id', $this->companyId())
+            ->distinct()
+            ->orderBy('name')
+            ->pluck('name');
+    }
+
     public function findByDocument(string $document): array
     {
         $user = User::where('company_id', $this->companyId())
