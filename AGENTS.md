@@ -29,13 +29,13 @@ php artisan scribe:generate  # Generate API docs (knuckleswtf/scribe)
 
 ```
 app/
-├── Http/Controllers/Api/   # 12 controllers (Auth, Branch, Dentist, Patient, Procedure, Product, Promotion, Appointment, Report, User, Role, Permission)
-├── Http/Middleware/         # RoleMiddleware — gates on type_user column, NOT Spatie hasRole()
-├── Http/Requests/{Domain}/ # 33 Form Request classes — all validation lives here
-├── Http/Resources/          # 13 API Resource classes
-├── Models/                  # 12 models (User, Branch, Dentist, Patient, Procedure, DentistProcedure, Appointment, Schedule, Invoice, Product, Promotion, Company)
+├── Http/Controllers/Api/   # 14 controllers (Auth, Branch, Company, Dentist, Patient, Procedure, Product, Promotion, Plan, Appointment, Report, User, Role, Permission)
+├── Http/Middleware/         # RoleMiddleware (gates on type_user, NOT Spatie hasRole) + CompanyMiddleware (company scoping)
+├── Http/Requests/{Domain}/ # 35 Form Request classes — all validation lives here
+├── Http/Resources/          # 15 API Resource classes
+├── Models/                  # 13 models (User, Branch, Dentist, Patient, Procedure, DentistProcedure, Appointment, Schedule, Invoice, Product, Promotion, Plan, Company)
 ├── Models/Concerns/         # HasCompany trait (multi-tenant global scope)
-├── Services/                # 13 service classes extending abstract Service
+├── Services/                # 14 service classes extending abstract Service
 bootstrap/app.php            # Routing, middleware aliases, exception handling
 routes/api.php               # Full CRUD with role-based groups (Administrator, Dentist, Patient)
 routes/web.php               # GET / (welcome view)
@@ -44,13 +44,13 @@ routes/web.php               # GET / (welcome view)
 ## Routing & Auth
 
 - API routes in `routes/api.php` registered via `->withRouting(api: ...)` in `bootstrap/app.php`
-- Public endpoints: `POST /auth/login/patient`, `POST /auth/login/staff`
-- Authenticated endpoints under `auth:sanctum`
-- Three role-based prefixes:
-  - `admin/` — `type_user: Administrator` (branches, dentists, patients, procedures, appointments, products, promotions, reports)
+- Public endpoints: `POST /auth/login/patient`, `POST /auth/login/staff`, `GET /plans` (catalog for the landing page, no auth), `GET/POST/DELETE /companies` (public companies CRUD, no auth)
+- Four role-based prefixes (each under `['company', 'role:...']` middleware):
+  - `admin/` — `type_user: Administrator` (branches, dentists, patients, procedures, appointments, products, promotions, plans, companies, reports)
   - `staff/` — `type_user: Administrator,Dentist` (select endpoints, appointment form data/slots)
   - `dentist/` — `type_user: Dentist` (schedule, my appointments)
   - `patient/` — `type_user: Patient` (me, appointments, cancel)
+- Roles, permissions and users CRUD (`/api/roles`, `/api/permissions`, `/api/users`) live under plain `auth:sanctum` — not role-gated
 
 ## Code Style
 

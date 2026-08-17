@@ -3,9 +3,11 @@
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\DentistController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\ProcedureController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromotionController;
@@ -17,6 +19,12 @@ use Illuminate\Support\Facades\Route;
 // ─── Public ───────────────────────────────────────────────────────────────────
 Route::post('/auth/login/patient', [AuthController::class, 'loginPatient']);
 Route::post('/auth/login/staff', [AuthController::class, 'loginStaff']);
+Route::get('/plans', [PlanController::class, 'publicIndex']);
+
+// Companies (public CRUD, no auth)
+Route::get('/companies', [CompanyController::class, 'index']);
+Route::post('/companies', [CompanyController::class, 'store']);
+Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
 // ─── Authenticated ────────────────────────────────────────────────────────────
 
@@ -97,6 +105,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/promotions', [PromotionController::class, 'index']);
         Route::post('/promotions', [PromotionController::class, 'store']);
         Route::post('/promotions/deactivate', [PromotionController::class, 'deactivate']);
+
+        // Plans
+        Route::get('/plans', [PlanController::class, 'index']);
+        Route::post('/plans', [PlanController::class, 'store']);
+        Route::delete('/plans/{plan}', [PlanController::class, 'destroy']);
+
+        // Companies
+        Route::get('/companies', [CompanyController::class, 'index']);
+        Route::post('/companies', [CompanyController::class, 'store']);
+        Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
 
         // Reports
         Route::get('/reports/staff', [ReportController::class, 'staffGraph']);

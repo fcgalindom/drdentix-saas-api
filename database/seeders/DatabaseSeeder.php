@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\Dentist;
 use App\Models\Patient;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -63,6 +64,22 @@ class DatabaseSeeder extends Seeder
             'city' => 'Bogotá',
             'telephone' => '+573009876543',
             'id_user' => $patientUser->id,
+        ]);
+
+        Plan::create([
+            'name' => 'Básico',
+            'price' => 19,
+            'description' => 'Hasta 100 citas al mes y 1 odontólogo conectado.',
+        ]);
+        Plan::create([
+            'name' => 'Pro',
+            'price' => 49,
+            'description' => 'Citas ilimitadas, 5 odontólogos conectados y gestión de sedes.',
+        ]);
+        Plan::create([
+            'name' => 'Enterprise',
+            'price' => 99,
+            'description' => 'Todo lo de Pro, soporte prioritario 24/7 y API Access.',
         ]);
     }
 }
