@@ -18,11 +18,11 @@ class ProcedureService extends Service
     {
         $query = $this->model->where('company_id', $this->companyId());
 
-        if (!empty($filters['name'])) {
-            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        if (! empty($filters['name'])) {
+            $query->where('name', 'like', '%'.$filters['name'].'%');
         }
 
-        if (!empty($filters['duration'])) {
+        if (! empty($filters['duration'])) {
             $query->where('duration', $filters['duration']);
         }
 

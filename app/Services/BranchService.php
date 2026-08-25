@@ -17,12 +17,12 @@ class BranchService extends Service
     {
         $query = $this->model->where('company_id', $this->companyId());
 
-        if (!empty($filters['name'])) {
-            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        if (! empty($filters['name'])) {
+            $query->where('name', 'like', '%'.$filters['name'].'%');
         }
 
-        if (!empty($filters['city'])) {
-            $query->where('city', 'like', '%' . $filters['city'] . '%');
+        if (! empty($filters['city'])) {
+            $query->where('city', 'like', '%'.$filters['city'].'%');
         }
 
         return $query->orderBy('name')->paginate(15);

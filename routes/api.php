@@ -105,6 +105,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/promotions', [PromotionController::class, 'index']);
         Route::post('/promotions', [PromotionController::class, 'store']);
         Route::post('/promotions/deactivate', [PromotionController::class, 'deactivate']);
+        Route::post('/promotions/state', [PromotionController::class, 'changeState']);
 
         // Plans
         Route::get('/plans', [PlanController::class, 'index']);

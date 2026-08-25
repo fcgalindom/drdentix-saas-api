@@ -17,6 +17,7 @@ class BranchController extends Controller
     public function index()
     {
         $filters = request()->only(['name', 'city']);
+
         return BranchResource::collection($this->branchService->listAll($filters));
     }
 

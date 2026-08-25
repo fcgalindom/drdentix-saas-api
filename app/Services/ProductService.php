@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class ProductService extends Service
 {
@@ -17,18 +18,18 @@ class ProductService extends Service
     {
         $query = $this->model->where('company_id', $this->companyId());
 
-        if (!empty($filters['active_principle'])) {
-            $query->where('active_principle', 'like', '%' . $filters['active_principle'] . '%');
+        if (! empty($filters['active_principle'])) {
+            $query->where('active_principle', 'like', '%'.$filters['active_principle'].'%');
         }
 
-        if (!empty($filters['semaphore'])) {
+        if (! empty($filters['semaphore'])) {
             $query->where('semaphore', $filters['semaphore']);
         }
 
         return $query->orderBy('active_principle')->paginate(15);
     }
 
-    public function activePrinciples(): \Illuminate\Support\Collection
+    public function activePrinciples(): Collection
     {
         return $this->model
             ->where('company_id', $this->companyId())

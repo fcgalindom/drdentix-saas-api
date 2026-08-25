@@ -28,4 +28,11 @@ class PromotionService extends Service
     {
         $this->model->where('company_id', $this->companyId())->findOrFail($id)->update(['status' => 0]);
     }
+
+    public function changeState(int $id, string $state): void
+    {
+        $this->model->where('company_id', $this->companyId())->findOrFail($id)->update([
+            'status' => $state === 'Activo' ? 1 : 0,
+        ]);
+    }
 }

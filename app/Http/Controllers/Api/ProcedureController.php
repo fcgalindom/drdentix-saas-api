@@ -17,6 +17,7 @@ class ProcedureController extends Controller
     public function index()
     {
         $filters = request()->only(['name', 'duration']);
+
         return ProcedureResource::collection($this->procedureService->listAll($filters));
     }
 
