@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\DentistController;
 use App\Http\Controllers\Api\PatientController;
@@ -20,6 +21,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/login/patient', [AuthController::class, 'loginPatient']);
 Route::post('/auth/login/staff', [AuthController::class, 'loginStaff']);
 Route::get('/plans', [PlanController::class, 'publicIndex']);
+
+Route::get('/cities', [CityController::class, 'index']);
 
 // Companies (public CRUD, no auth)
 Route::get('/companies', [CompanyController::class, 'index']);

@@ -90,8 +90,6 @@ class PatientService extends Service
         $patient = $this->model->where('company_id', $this->companyId())->with('user')->findOrFail($id);
         $patient->user->update([
             'state' => $state,
-            'email' => time().'@gmail.com',
-            'document' => (string) time(),
         ]);
     }
 
